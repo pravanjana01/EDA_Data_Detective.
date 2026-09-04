@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>EDA Data Detective</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+        🔎 EDA Data Detective
+    </div>
+
+    <nav>
+        <button id="themeToggle" onclick="toggleTheme()">🌙</button>
+        <a href="#home">Home</a>
+        <a href="#dataset">Dataset</a>
+        <a href="#analysis">Analysis</a>
+        <a href="#quiz">Quiz</a>
+    </nav>
+
+</header>
+
+
+<main>
+
+<!-- HERO -->
+
+<section id="home" class="hero">
+
+    <div class="hero-content">
+
+        <p class="tag">EXPLORATORY DATA ANALYSIS</p>
+
+        <h1>
+            Become a
+            <span>Data Detective</span>
+        </h1>
+
+        <p class="hero-text">
+            Explore, clean, analyze and discover hidden patterns
+            inside student performance data.
+        </p>
+
+        <a href="#dataset" class="hero-btn">
+            Start Investigation →
+        </a>
+
+    </div>
+
+</section>
+
+
+<!-- DATASET -->
+
+<section id="dataset" class="section">
+
+    <div class="section-title">
+
+        <p>01 — DATASET</p>
+
+        <h2>Dataset Overview</h2>
+
+        <span>
+            Understand the structure of your data before analysis.
+        </span>
+
+    </div>
+
+
+    <!-- STAT CARDS -->
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+            <span>📊</span>
+            <h3 id="totalRows">0</h3>
+            <p>Total Rows</p>
+        </div>
+
+        <div class="stat-card">
+            <span>🧩</span>
+            <h3 id="totalColumns">0</h3>
+            <p>Columns</p>
+        </div>
+
+        <div class="stat-card">
+            <span>⚠️</span>
+            <h3 id="missingValues">0</h3>
+            <p>Missing Values</p>
+        </div>
+
+        <div class="stat-card">
+            <span>♻️</span>
+            <h3 id="duplicates">0</h3>
+            <p>Duplicates</p>
+        </div>
+
+    </div>
+
+
+    <!-- DATASET EXPLORER -->
+    <button onclick="resetDashboard()" class="reset-btn">↻ Reset Dashboard</button>
+
+    <div class="explorer">
+
+        <div class="explorer-title">
+
+            <div>
+                <p>INTERACTIVE EXPLORER</p>
+                <h3>Search & Filter Students</h3>
+            </div>
+
+            <span class="live-dot">● LIVE</span>
+
+        </div>
+<div class="upload-box">
+    <div class="upload-icon">📂</div>
+    <h3>Upload Your Dataset</h3>
+    <p>Upload a CSV file to perform automatic EDA</p>
+
+    <input type="file" id="csvFile" accept=".csv">
+
+    <label for="csvFile" class="upload-btn">
+        Choose CSV File
+    </label>
+
+    <p id="uploadStatus"></p>
+</div>
+
+        <div class="dataset-tools">
+
+            <input
+                type="text"
+                id="studentSearch"
+                placeholder="🔎 Search student ID..."
+                oninput="applyExplorer()"
+            >
+
+
+            <select
+                id="performanceFilter"
+                onchange="applyExplorer()"
+            >
+
+                <option value="all">
+                    All Students
+                </option>
+
+                <option value="high">
+                    High Performance
+                </option>
+
+                <option value="medium">
+                    Medium Performance
+                </option>
+
+                <option value="low">
+                    Low Performance
+                </option>
+
+            </select>
+
+
+            <select
+                id="sortOption"
+                onchange="applyExplorer()"
+            >
+
+                <option value="default">
+                    Sort By
+                </option>
+
+                <option value="study">
+                    Study Hours
+                </option>
+
+                <option value="attendance">
+                    Attendance
+                </option>
+
+                <option value="assignments">
+                    Assignments
+                </option>
+
+                <option value="math">
+                    Math Score
+                </option>
+
+                <option value="python">
+                    Python Score
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+                        <th>Study Hours</th>
+                        <th>Attendance</th>
+                        <th>Assignments</th>
+                        <th>Math</th>
+                        <th>Python</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="dataTable"></tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- KEY FINDINGS -->
+
+    <div class="key-findings">
+
+        <div class="explorer-title">
+
+            <div>
+                <p>AUTOMATED DISCOVERY</p>
+                <h3>💡 Key Findings</h3>
+            </div>
+
+        </div>
+
+
+        <div class="findings-grid">
+
+            <div class="finding">
+
+                <span>🏆</span>
+
+                <p>Highest Math Score</p>
+
+                <strong id="highestMath">-</strong>
+
+            </div>
+
+
+            <div class="finding">
+
+                <span>🐍</span>
+
+                <p>Highest Python Score</p>
+
+                <strong id="highestPython">-</strong>
+
+            </div>
+
+
+            <div class="finding">
+
+                <span>📚</span>
+
+                <p>Average Study Hours</p>
+
+                <strong id="averageStudy">-</strong>
+
+            </div>
+
+
+            <div class="finding">
+
+                <span>🎓</span>
+
+                <p>Average Attendance</p>
+
+                <strong id="averageAttendance">-</strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- CLEANING -->
+
+    <div class="sub-section">
+
+        <div class="section-mini-title">
+
+            <p>DATA QUALITY</p>
+
+            <h3>🧹 Data Cleaning Check</h3>
+
+        </div>
+
+
+        <div class="clean-grid">
+
+            <div class="clean-card">
+
+                <span>✓</span>
+
+                <h4>Missing Values</h4>
+
+                <strong id="cleanMissing">0</strong>
+
+                <p>No missing values detected.</p>
+
+            </div>
+
+
+            <div class="clean-card">
+
+                <span>✓</span>
+
+                <h4>Duplicate Rows</h4>
+
+                <strong id="cleanDuplicates">0</strong>
+
+                <p>No duplicate records detected.</p>
+
+            </div>
+
+
+            <div class="clean-card">
+
+                <span>✓</span>
+
+                <h4>Data Types</h4>
+
+                <strong>Valid</strong>
+
+                <p>Numerical data is ready for analysis.</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ANALYSIS -->
+
+<section id="analysis" class="section dark-section">
+
+    <div class="section-title">
+
+        <p>02 — ANALYSIS</p>
+
+        <h2>Statistical Analysis</h2>
+
+        <span>
+            Discover the central tendency and spread of the dataset.
+        </span>
+
+    </div>
+
+
+    <div class="analysis-grid">
+
+        <div class="analysis-card">
+
+            <div class="analysis-icon">📚</div>
+
+            <h3>Study Hours</h3>
+
+            <div class="metric">
+                <span>Mean</span>
+                <strong id="studyMean">-</strong>
+            </div>
+
+            <div class="metric">
+                <span>Median</span>
+                <strong id="studyMedian">-</strong>
+            </div>
+
+            <div class="metric">
+                <span>Minimum</span>
+                <strong id="studyMin">-</strong>
+            </div>
+
+            <div class="metric">
+                <span>Maximum</span>
+                <strong id="studyMax">-</strong>
+            </div>
+
+        </div>
+
+
+        <div class="analysis-card">
+
+            <div class="analysis-icon">🧮</div>
+
+            <h3>Math Score</h3>
+
+            <div class="metric">
+                <span>Mean</span>
+                <strong id="mathMean">-</strong>
+            </div>
+
+            <div class="metric">
+                <span>Median</span>
+                <strong id="mathMedian">-</strong>
+            </div>
+
+            <div class="metric">
+                <span>Minimum</span>
+                <strong id="mathMin">-</strong>
+            </div>
+
+            <div class="metric">
+                <span>Maximum</span>
+                <strong id="mathMax">-</strong>
+            </div>
+
+        </div>
+
+
+        <div class="analysis-card">
+
+            <div class="analysis-icon">🐍</div>
+
+            <h3>Python Score</h3>
+
+            <div class="metric">
+                <span>Mean</span>
+                <strong id="pythonMean">-</strong>
+            </div>
+
+            <div class="metric">
+                <span>Median</span>
+                <strong id="pythonMedian">-</strong>
+            </div>
+
+            <div class="metric">
+                <span>Minimum</span>
+                <strong id="pythonMin">-</strong>
+            </div>
+
+            <div class="metric">
+                <span>Maximum</span>
+                <strong id="pythonMax">-</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- CHARTS -->
+
+    <div class="charts-section">
+
+        <div class="section-mini-title">
+
+            <p>VISUAL ANALYSIS</p>
+
+            <h3>📈 Data Distribution</h3>
+            
+
+        </div>
+
+
+        <div class="charts-grid">
+<div class="interactive-chart-box">
+    <h3>📊 Interactive Data Visualization</h3>
+    <p>Choose a variable to explore the dataset.</p>
+
+    <div class="chart-controls">
+        <select id="chartVariable" onchange="updateInteractiveChart()">
+            <option value="study">Study Hours</option>
+            <option value="attendance">Attendance</option>
+            <option value="assignments">Assignments</option>
+            <option value="math">Math Score</option>
+            <option value="python">Python Score</option>
+        </select>
+    </div>
+
+    <div id="interactiveChart" class="interactive-chart"></div>
+</div>
+            <div class="chart-card">
+
+                <h3>Study Hours Distribution</h3>
+
+                <div id="studyChart" class="bar-chart"></div>
+
+            </div>
+
+
+            <div class="chart-card">
+
+                <h3>Math Score Distribution</h3>
+
+                <div id="mathChart" class="bar-chart"></div>
+
+            </div>
+
+
+            <div class="chart-card">
+
+                <h3>Python Score Distribution</h3>
+
+                <div id="pythonChart" class="bar-chart"></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- OUTLIER -->
+
+    <div class="outlier-box">
+
+        <div class="section-mini-title">
+
+            <p>ANOMALY DETECTION</p>
+
+            <h3>🚨 Outlier Detection</h3>
+
+        </div>
+
+
+        <p class="outlier-info">
+            Using the IQR method to identify unusual values.
+        </p>
+
+
+        <div id="outlierResults" class="outlier-results"></div>
+
+    </div>
+
+
+    <!-- CORRELATION -->
+
+    <div class="correlation-box">
+
+        <div>
+
+            <p>RELATIONSHIP ANALYSIS</p>
+
+            <h3>🔗 Correlation Analysis</h3>
+
+        </div>
+
+
+        <div class="correlation-content">
+
+            <div class="correlation-number">
+                <span id="correlationValue">0</span>
+                <small>Study Hours ↔ Math Score</small>
+            </div>
+
+
+            <div id="correlationText" class="correlation-text">
+                Analyzing...
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- INSIGHTS -->
+
+    <div class="insights-box">
+
+        <div class="section-mini-title">
+
+            <p>DATA DETECTIVE</p>
+
+            <h3>🕵️ Automatic Insights</h3>
+            <div class="recommendation-box">
+    <h3>🤖 EDA Recommendations</h3>
+    <p>Automated recommendations based on dataset analysis.</p>
+
+    <div id="recommendations"></div>
+</div>
+            <div class="score-box">
+    <h3>🏆 EDA Quality Score</h3>
+    <div class="score-number">
+        <span id="edaScore">0</span>/100
+    </div>
+    <p id="scoreMessage">Calculating EDA quality...</p>
+</div>
+<div class="score-box">
+    <div>
+        <span class="score-label">EDA QUALITY SCORE</span>
+        <h3>🧠 Data Detective Score</h3>
+        <div class="recommendation-box">
+    <span class="score-label">AI RECOMMENDATION</span>
+    <h3>🤖 Data Detective Recommendations</h3>
+    <div id="recommendations">
+        Analyzing your dataset...
+    </div>
+</div>
+        <p>Overall quality of the EDA analysis</p>
+    </div>
+
+    <div class="score-circle">
+        <span id="edaScore">--</span>
+        <small>/100</small>
+    </div>
+
+    <div id="scoreMessage" class="score-message">
+        Analyzing dataset...
+    </div>
+</div>
+        </div>
+
+
+        <div id="insightsList" class="insights-list"></div>
+
+    </div>
+<div class="report-box">
+    <div class="report-header">
+        <div>
+            <span class="report-tag">EDA REPORT</span>
+            <h3>🕵️ Data Detective Report</h3>
+            <p>Automatically generated summary of the dataset</p>
+        </div>
+
+        </button>
+        <button onclick="downloadReport()" class="report-btn">
+    📥 Download Report
+</button>
+    </div>
+
+    <div id="edaReport" class="eda-report">
+        <p>Click <b>Generate EDA Report</b> to investigate the dataset.</p>
+    </div>
+</div>
+
+    <!-- EDA PROCESS -->
+
+    <div class="process-section">
+
+        <div class="section-mini-title">
+
+            <p>WORKFLOW</p>
+
+            <h3>🔬 EDA Process</h3>
+
+        </div>
+
+
+        <div class="process-grid">
+
+            <div class="process-card">
+                <span>01</span>
+                <h4>Collect</h4>
+                <p>Gather relevant data.</p>
+            </div>
+
+            <div class="process-card">
+                <span>02</span>
+                <h4>Clean</h4>
+                <p>Handle missing and duplicate data.</p>
+            </div>
+
+            <div class="process-card">
+                <span>03</span>
+                <h4>Explore</h4>
+                <p>Understand patterns and distributions.</p>
+            </div>
+
+            <div class="process-card">
+                <span>04</span>
+                <h4>Analyze</h4>
+                <p>Find relationships between variables.</p>
+            </div>
+
+            <div class="process-card">
+                <span>05</span>
+                <h4>Visualize</h4>
+                <p>Convert data into meaningful charts.</p>
+            </div>
+
+            <div class="process-card">
+                <span>06</span>
+                <h4>Conclude</h4>
+                <p>Generate useful insights.</p>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+<section class="section about-section">
+
+    <h2 class="section-title">🧠 How EDA Works</h2>
+
+    <p class="section-subtitle">
+        Exploratory Data Analysis helps us understand, clean and visualize data
+        before making meaningful conclusions.
+    </p>
+
+    <div class="about-grid">
+
+        <div class="about-card">
+            <div class="about-icon">📥</div>
+            <h3>1. Collect</h3>
+            <p>Collect the required dataset from a reliable source.</p>
+        </div>
+
+        <div class="about-card">
+            <div class="about-icon">🧹</div>
+            <h3>2. Clean</h3>
+            <p>Check missing values, duplicates and incorrect data.</p>
+        </div>
+
+        <div class="about-card">
+            <div class="about-icon">🔍</div>
+            <h3>3. Explore</h3>
+            <p>Study the structure and important patterns in the data.</p>
+        </div>
+
+        <div class="about-card">
+            <div class="about-icon">📊</div>
+            <h3>4. Analyze</h3>
+            <p>Use statistics and correlations to understand relationships.</p>
+        </div>
+
+        <div class="about-card">
+            <div class="about-icon">📈</div>
+            <h3>5. Visualize</h3>
+            <p>Represent important findings using charts and graphs.</p>
+        </div>
+
+        <div class="about-card">
+            <div class="about-icon">💡</div>
+            <h3>6. Conclude</h3>
+            <p>Convert the analysis into useful insights and recommendations.</p>
+        </div>
+
+    </div>
+
+</section>
+
+<section class="section">
+    <h2 class="section-title">🎯 Student Performance Predictor</h2>
+    <p class="section-subtitle">
+        Predict student performance using study, attendance and assignment data.
+    </p>
+
+    <div class="predictor-box">
+        <div class="predict-inputs">
+
+            <div>
+                <label>Study Hours</label>
+                <input type="number" id="predictStudy" min="0" max="12" placeholder="Example: 6">
+            </div>
+
+            <div>
+                <label>Attendance (%)</label>
+                <input type="number" id="predictAttendance" min="0" max="100" placeholder="Example: 85">
+            </div>
+
+            <div>
+                <label>Assignment Score</label>
+                <input type="number" id="predictAssignment" min="0" max="100" placeholder="Example: 80">
+            </div>
+
+        </div>
+
+        <button onclick="predictPerformance()" class="predict-btn">
+            🔮 Predict Performance
+        </button>
+
+        <div id="predictionResult" class="prediction-result">
+            Enter student details and click Predict.
+        </div>
+    </div>
+</section>
+<!-- QUIZ -->
+
+<section id="quiz" class="section">
+
+    <div class="section-title">
+
+        <p>03 — TEST YOUR KNOWLEDGE</p>
+
+        <h2>EDA Quiz</h2>
+
+        <span>
+            Check how well you understand Exploratory Data Analysis.
+        </span>
+
+    </div>
+
+
+    <div class="quiz-box">
+
+        <div class="question">
+
+            <h3>
+                1. What is the main purpose of EDA?
+            </h3>
+
+            <label>
+                <input type="radio" name="q1" value="a">
+                Building a website
+            </label>
+
+            <label>
+                <input type="radio" name="q1" value="b">
+                Understanding data patterns
+            </label>
+
+            <label>
+                <input type="radio" name="q1" value="c">
+                Creating passwords
+            </label>
+
+        </div>
+
+
+        <div class="question">
+
+            <h3>
+                2. Which chart is useful for comparing categories?
+            </h3>
+
+            <label>
+                <input type="radio" name="q2" value="a">
+                Bar Chart
+            </label>
+
+            <label>
+                <input type="radio" name="q2" value="b">
+                Paragraph
+            </label>
+
+            <label>
+                <input type="radio" name="q2" value="c">
+                Text File
+            </label>
+
+        </div>
+
+
+        <div class="question">
+
+            <h3>
+                3. What does correlation measure?
+            </h3>
+
+            <label>
+                <input type="radio" name="q3" value="a">
+                File size
+            </label>
+
+            <label>
+                <input type="radio" name="q3" value="b">
+                Relationship between variables
+            </label>
+
+            <label>
+                <input type="radio" name="q3" value="c">
+                Number of pages
+            </label>
+
+        </div>
+
+
+        <button onclick="checkQuiz()">
+            Check Answers
+        </button>
+
+
+        <div id="quizResult"></div>
+
+    </div>
+
+</section>
+
+</main>
+
+
+<footer>
+
+    <h3>🔎 EDA Data Detective</h3>
+
+    <p>
+        Explore • Analyze • Visualize • Discover
+    </p>
+
+    <span>
+        Built as an EDA learning project
+    </span>
+
+</footer>
+
+
+<script src="script.js"></script>
+<button id="backToTop" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+    ↑
+</button>
+</body>
+
+</html>
