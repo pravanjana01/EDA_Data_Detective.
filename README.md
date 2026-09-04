@@ -1,1 +1,1 @@
-# AI_Career_Compass
+#EDA Data Detective
